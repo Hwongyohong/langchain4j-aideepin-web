@@ -19,10 +19,23 @@ const tmpUuid = ref<string>('')
 const tmpTitle = ref<string>('')
 const tmpSystemMessage = ref<string>('')
 
+const { uuid: curConvUuid } = route.params as { uuid: string }
+console.log(`curConvUuid:${curConvUuid}`)
+
 async function handleSelect({ uuid }: Chat.Conversation) {
   console.log('click chat', uuid)
-  if (isActive(uuid))
+  if (isActive(uuid)) {
+    const minMsgUuid = chatStore.getCurConv?.minMsgUuid || ''
+    const cacheMessages = chatStore.getMsgsByConv(uuid)
+    if (cacheMessages.length === 0) {
+      const { data } = await api.fetchMessages<Chat.ConvMsgListResp>(uuid, minMsgUuid, 20)
+      data.msgList.forEach((messageRecord) => {
+        chatStore.addMessage(uuid, messageRecord, false)
+      })
+      chatStore.updateConv(uuid, { minMsgUuid: data.minMsgUuid, loadedFirstPageMsg: true })
+    }
     return
+  }
 
   if (chatStore.active)
     chatStore.updateConv(chatStore.active, {})
@@ -78,11 +91,22 @@ async function fetchHistory() {
     chatStore.addConvs(convs)
 
     const active = route.params.uuid as string
+    const targetConversation = convs.find(item => item.uuid === active)
+    if (targetConversation)
+      await handleSelect(targetConversation)
+    await loadLLMs()
     console.log('active', active)
-    if (active === 'default'){
+    if (active === 'default')
       await handleSelect(convs[0])
-    }
   }
+}
+async function loadLLMs() {
+  const llms = await api.loadLLMs<AiModelInfo[]>()
+  appStore.setLLMs(llms.data)
+  const imageModels = await api.loadImageModels<AiModelInfo[]>()
+  appStore.setImageModels(imageModels.data)
+  const engines = await api.loadSearchEngines<SearchEngineInfo[]>()
+  appStore.setSearchEngines(engines.data)
 }
 
 const convList = computed(() => chatStore.conversations)
@@ -97,7 +121,7 @@ watch(
   },
 )
 
-onMounted(() => {
+onMounted(async () => {
   console.log('chat list onMounted')
   if (authStoreRef.value.token)
     fetchHistory()

@@ -409,6 +409,53 @@ function aiSearchRecordDel<T = any>(uuid: string) {
   })
 }
 
+function searchUsers<T>(currentPage: number, pageSize: number, keyword?: string) {
+  const search = keyword === undefined ? '' : `keyword=${keyword}&`
+  return get<T>({
+    url: `/admin/users/search?${search}currentPage=${currentPage}&pageSize=${pageSize}`,
+  })
+}
+function editUser<T>(id: string) {
+  return post<T>({
+    url: `/admin/users/edit/${id}`,
+  })
+}
+function userSave<T>(user: User.UserConfig) {
+  return post<T>({
+    url: '/admin/users/save',
+    data: user,
+  })
+}
+
+function searchModels<T>(currentPage: number, pageSize: number, keyword?: string) {
+  const search = keyword === undefined ? '' : `keyword=${keyword}&`
+  return get<T>({
+    url: `/admin/models/search?${search}currentPage=${currentPage}&pageSize=${pageSize}`,
+  })
+}
+function modelEdit<T>(id: number) {
+  return post<T>({
+    url: `/admin/models/edit/${id}`,
+  })
+}
+function modelSave<T>(model: Chat.ModelInfo) {
+  return post<T>({
+    url: '/admin/models/save',
+    data: model,
+  })
+}
+function updateModel<T>(model: { name: string; company: string; modelStatus: number; level: number }) {
+  return post<T>({
+    url: '/admin/models/updateModel',
+    data: { model },
+  })
+}
+function delModel<T>(name?: string) {
+  return post<T>({
+    url: `/admin/models/del/${name}`,
+  })
+}
+
 export default {
   login,
   register,
@@ -460,4 +507,12 @@ export default {
   aiSearchProcess,
   aiSearchRecords,
   aiSearchRecordDel,
+  searchUsers,
+  editUser,
+  userSave,
+  modelEdit,
+  modelSave,
+  searchModels,
+  delModel,
+  updateModel,
 }

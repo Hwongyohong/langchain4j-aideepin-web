@@ -10,7 +10,7 @@ export function defaultSetting(): UserState {
   return {
     userInfo: {
       avatar: '/api/user/myAvatar',
-      name: 'aideepin',
+      name: '匿名用户',
       description: '',
     },
   }

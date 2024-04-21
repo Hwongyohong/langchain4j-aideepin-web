@@ -94,4 +94,11 @@ declare namespace Chat {
 		minId: number
 		imageItems: AiImageItem[]
 	}
+
+	interface ModelInfo{
+		name?: string
+		modelStatus?: string | undefined
+		company?: string
+		level?: number | undefined
+	}
 }

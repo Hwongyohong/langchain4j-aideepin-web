@@ -2,7 +2,7 @@
 import { NButton, NConfigProvider, NIcon, NLayout, NLayoutSider, NMenu, NSpace, NTooltip } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
 import type { Component } from 'vue'
-import { defineAsyncComponent, h, onMounted, ref } from 'vue'
+import { defineAsyncComponent, h, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ChatboxEllipsesOutline, ImagesOutline, LibraryOutline, SearchOutline, SettingsOutline } from '@vicons/ionicons5'
 
@@ -11,12 +11,10 @@ import { NaiveProvider, PromptStore } from '@/components/common'
 import { useTheme } from '@/hooks/useTheme'
 import { useLanguage } from '@/hooks/useLanguage'
 import { t } from '@/locales'
-import { useAppStore, useChatStore, useKbStore } from '@/store'
-import api from '@/api'
+import { useChatStore, useKbStore } from '@/store'
 
 const Setting = defineAsyncComponent(() => import('@/components/common/Setting/index.vue'))
 
-const appStore = useAppStore()
 const chatStore = useChatStore()
 const kbStore = useKbStore()
 const { theme, themeOverrides } = useTheme()
@@ -92,15 +90,6 @@ const menuOptions: MenuOption[] = [
 function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
-
-onMounted(async () => {
-  const llms = await api.loadLLMs<AiModelInfo[]>()
-  appStore.setLLMs(llms.data)
-  const imageModels = await api.loadImageModels<AiModelInfo[]>()
-  appStore.setImageModels(imageModels.data)
-  const engines = await api.loadSearchEngines<SearchEngineInfo[]>()
-  appStore.setSearchEngines(engines.data)
-})
 </script>
 
 <template>

@@ -76,6 +76,7 @@ export default {
     quota: '额度',
     avatarLink: '头像链接',
     name: '名称',
+    userLevel: '用户属性',
     description: '描述',
     role: '角色设定',
     resetUserInfo: '重置用户信息',
@@ -89,6 +90,23 @@ export default {
     httpsProxy: 'HTTPS Proxy',
     balance: 'API余额',
   },
+
+  control: {
+    control: '管理',
+    users: '用户',
+    models: '模型',
+    userName: '用户名称',
+    activeTime: '上次登录',
+    userLevel: '级别',
+    userStatus: '状态',
+    dayTokenLimit: '日Token限制',
+    monthTokenLimit: '月Token限制',
+    modelName: '模型名称',
+    modelStatus: '状态',
+    modeLevel: '级别',
+    modelCompany: '公司',
+  },
+
   store: {
     siderButton: '提示词商店',
     local: '本地',

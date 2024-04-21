@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { NButton, NImage, NSpace } from 'naive-ui'
 import type { Theme } from '@/store/modules/app/helper'
-import { SvgIcon } from '@/components/common'
+import { Models, SvgIcon, Users } from '@/components/common'
 import { useAppStore, useAuthStore, useUserStore } from '@/store'
 import api from '@/api'
 import defaultAvatar from '@/assets/avatar.jpg'
@@ -18,6 +18,9 @@ const userInfo = computed(() => userStore.userInfo)
 const avatar = ref(userInfo.value.avatar ?? '')
 
 const name = ref(userInfo.value.name ?? '')
+
+// eslint-disable-next-line eqeqeq
+const userLevel = ref(userInfo.value.userLevel == 0 ? '普通' : '高级')
 
 // const language = computed({
 //   get() {
@@ -45,6 +48,26 @@ const themeOptions: { label: string; key: Theme; icon: string }[] = [
     icon: 'ri:moon-foggy-line',
   },
 ]
+
+const showModels = ref<boolean>(false)
+const showUsers = ref<boolean>(false)
+const isAdmin = ref<boolean>(userInfo.value.isAdmin ?? false)
+const controlType: { label: string; key: string }[] = [
+  {
+    label: '用户管理',
+    key: 'user',
+  },
+  {
+    label: '模型管理',
+    key: 'model',
+  },
+]
+const showControl: (key: string) => void = (key: string) => {
+  if (key === 'user')
+    showUsers.value = true
+  if (key === 'model')
+    showModels.value = true
+}
 
 // const languageOptions: { label: string; key: Language; value: Language }[] = [
 //   { label: '简体中文', key: 'zh-CN', value: 'zh-CN' },
@@ -74,6 +97,25 @@ async function logout() {
           {{ name }}
         </div>
       </div>
+
+      <div class="flex items-center space-x-4">
+        <span class="flex-shrink-0 w-[100px]">{{ $t('setting.userLevel') }}</span>
+        <div class="w-[200px]">
+          {{ userLevel }}
+        </div>
+      </div>
+
+      <div v-if="isAdmin" class="flex items-center space-x-4">
+        <span class="flex-shrink-0 w-[100px]">{{ $t('control.control') }}</span>
+        <div class="flex flex-wrap items-center gap-4">
+          <template v-for="item of controlType" :key="item.key">
+            <NButton size="small" :type="item.key === theme ? 'primary' : undefined" @click="showControl(item.key)">
+              {{ item.label }}
+            </NButton>
+          </template>
+        </div>
+      </div>
+
       <!-- <div class="flex items-center space-x-4" :class="isMobile && 'items-start'">
         <span class="flex-shrink-0 w-[100px]">{{ $t('setting.chatHistory') }}</span>
 
@@ -134,4 +176,6 @@ async function logout() {
       </div>
     </div>
   </div>
+  <Models v-if="isAdmin" v-model:visible="showModels" />
+  <Users v-if="isAdmin" v-model:visible="showUsers" />
 </template>
